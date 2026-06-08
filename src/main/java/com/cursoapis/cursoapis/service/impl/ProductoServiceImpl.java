@@ -3,6 +3,8 @@ package com.cursoapis.cursoapis.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import com.cursoapis.cursoapis.entity.Categoria;
+import com.cursoapis.cursoapis.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +21,17 @@ public class ProductoServiceImpl implements ProductoService{
     @Autowired
     private ProductoRepository productoRepository;
 
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
     @Override
-    public Producto registraProducto(Producto producto) {
+    @SneakyThrows
+    public Producto registraProducto(Long categoriaId, Producto producto) {
+       Categoria categoria = categoriaRepository.findById(categoriaId)
+               .orElseThrow(() -> new Exception ("Categoria con ID "+ categoriaId+" no encontrada"));
+       producto.setCategoria(categoria);
        return productoRepository.save(producto);
+
     }
 
     @Override
@@ -44,12 +54,17 @@ public class ProductoServiceImpl implements ProductoService{
     public Producto actualizarProducto(Long idProducto, Producto producto) {
         Producto productoExistente = productoRepository.findById(idProducto)
         .orElseThrow(()-> new Exception("Producto con Id: "+ idProducto + " no encontrado"));
-        
         productoExistente.setNombreProducto(producto.getNombreProducto());
-        productoExistente.setPrecio(productoExistente.getPrecio());
-        productoExistente.setCantidad(productoExistente.getCantidad());
-        productoExistente.setDescripcion(productoExistente.getDescripcion());
-        
+        productoExistente.setPrecio(producto.getPrecio());
+        productoExistente.setCantidad(producto.getCantidad());
+        productoExistente.setDescripcion(producto.getDescripcion());
+        productoExistente.setEstadoProducto(producto.getEstadoProducto());
+
+        if (producto.getCategoria() != null && producto.getCategoria().getIdCategoria() != null){
+            Categoria categoria = categoriaRepository.findById(producto.getCategoria().getIdCategoria())
+                    .orElseThrow(() -> new Exception ("Categoria no encontrada"));
+            productoExistente.setCategoria(categoria);
+        }
         return productoRepository.save(productoExistente);
     }
 

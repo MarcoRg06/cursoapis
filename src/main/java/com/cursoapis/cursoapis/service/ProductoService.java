@@ -7,7 +7,7 @@ import com.cursoapis.cursoapis.entity.EstadoProducto;
 import com.cursoapis.cursoapis.entity.Producto;
 
 public interface ProductoService {
-Producto registraProducto(Producto producto);
+Producto registraProducto(Long categoriaId,Producto producto);
 
 List<Producto> listarProducto();
 
