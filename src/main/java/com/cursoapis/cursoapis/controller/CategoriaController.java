@@ -2,6 +2,8 @@ package com.cursoapis.cursoapis.controller;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.cursoapis.cursoapis.Exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +45,7 @@ public class CategoriaController {
     if (categoria1Optional.isPresent()) {
         return new ResponseEntity<>(categoria1Optional.get(),HttpStatus.OK);
     }else {
-        throw new Exception("Categoria no encontrada");
+        throw new ResourceNotFoundException("Categoria no encontrada");
     }
    }
 
@@ -54,7 +56,7 @@ public class CategoriaController {
             if (categoriaActualizada != null) {
                 return new ResponseEntity<>(categoriaActualizada,HttpStatus.OK);
             }else{
-                throw new Exception("Categoria no encontrada para actualizar");
+                throw new ResourceNotFoundException("Categoria no encontrada para actualizar");
             }
 
         }catch (Exception e){

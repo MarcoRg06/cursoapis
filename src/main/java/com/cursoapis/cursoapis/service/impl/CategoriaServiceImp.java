@@ -3,7 +3,8 @@ package com.cursoapis.cursoapis.service.impl;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.coyote.BadRequestException;
+import com.cursoapis.cursoapis.Exceptions.BadRequestException;
+import com.cursoapis.cursoapis.Exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,6 @@ public class CategoriaServiceImp implements CategoriaService {
 
 
     @Override
-    @SneakyThrows
     public Categoria crearCategoria(Categoria categoria) {
         if (categoriaRepository.existsByNombreCategoria(categoria.getNombreCategoria())) {
             throw new BadRequestException("Ya existe una categoria con ese nombre ");
@@ -40,10 +40,9 @@ public class CategoriaServiceImp implements CategoriaService {
     }
 
     @Override
-    @SneakyThrows
     public Categoria actualizarCategoria(Long idCategoria, Categoria categoria) {
         Categoria categoriaExistente = categoriaRepository.findById(idCategoria)
-        .orElseThrow(() -> new Exception("Producto con Id: "+ idCategoria+ " no encontrada"));
+        .orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada"));
 
         categoriaExistente.setNombreCategoria(categoria.getNombreCategoria());
 
@@ -51,10 +50,9 @@ public class CategoriaServiceImp implements CategoriaService {
     }
 
     @Override
-    @SneakyThrows
     public void aliminarCategoria(Long idCategoria) {
       categoriaRepository.findById(idCategoria)
-      .orElseThrow(()-> new Exception("Producto con Id: "+ idCategoria + "no encontrado"));
+      .orElseThrow(()-> new ResourceNotFoundException("Categoria no encontrada para eliminar"));
     
       categoriaRepository.deleteById(idCategoria);
     }

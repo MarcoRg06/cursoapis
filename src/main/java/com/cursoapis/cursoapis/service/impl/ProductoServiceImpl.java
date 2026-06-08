@@ -3,6 +3,7 @@ package com.cursoapis.cursoapis.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import com.cursoapis.cursoapis.Exceptions.ResourceNotFoundException;
 import com.cursoapis.cursoapis.entity.Categoria;
 import com.cursoapis.cursoapis.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,9 @@ public class ProductoServiceImpl implements ProductoService{
     private CategoriaRepository categoriaRepository;
 
     @Override
-    @SneakyThrows
     public Producto registraProducto(Long categoriaId, Producto producto) {
        Categoria categoria = categoriaRepository.findById(categoriaId)
-               .orElseThrow(() -> new Exception ("Categoria con ID "+ categoriaId+" no encontrada"));
+               .orElseThrow(() -> new ResourceNotFoundException("Categoria con ID "+ categoriaId+" no encontrada"));
        producto.setCategoria(categoria);
        return productoRepository.save(producto);
 
@@ -50,10 +50,10 @@ public class ProductoServiceImpl implements ProductoService{
     }
 
     @Override
-    @SneakyThrows
     public Producto actualizarProducto(Long idProducto, Producto producto) {
         Producto productoExistente = productoRepository.findById(idProducto)
-        .orElseThrow(()-> new Exception("Producto con Id: "+ idProducto + " no encontrado"));
+        .orElseThrow(()-> new ResourceNotFoundException("Producto con Id: "+ idProducto + " no encontrado"));
+
         productoExistente.setNombreProducto(producto.getNombreProducto());
         productoExistente.setPrecio(producto.getPrecio());
         productoExistente.setCantidad(producto.getCantidad());
@@ -62,26 +62,26 @@ public class ProductoServiceImpl implements ProductoService{
 
         if (producto.getCategoria() != null && producto.getCategoria().getIdCategoria() != null){
             Categoria categoria = categoriaRepository.findById(producto.getCategoria().getIdCategoria())
-                    .orElseThrow(() -> new Exception ("Categoria no encontrada"));
+                    .orElseThrow(() -> new ResourceNotFoundException ("Categoria no encontrada"));
             productoExistente.setCategoria(categoria);
         }
         return productoRepository.save(productoExistente);
     }
 
     @Override
-    @SneakyThrows
+
     public void eliminarProducto(Long idProducto) {
       productoRepository.findById(idProducto)
-        .orElseThrow(()-> new Exception("Producto con Id: "+ idProducto + " no encontrado"));
+        .orElseThrow(()-> new ResourceNotFoundException("Producto con Id: "+ idProducto + " no encontrado"));
         
          productoRepository.deleteById(idProducto);
     }
 
     @Override
-    @SneakyThrows
+
     public Producto cambiarEstadoProducto(Long idProducto, EstadoProducto nuevEstadoProducto) {
          Producto productoExistente = productoRepository.findById(idProducto)
-        .orElseThrow(()-> new Exception("Producto con Id: "+ idProducto + " no encontrado"));
+        .orElseThrow(()-> new ResourceNotFoundException("Producto con Id: "+ idProducto + " no encontrado"));
 
         productoExistente.setEstadoProducto(nuevEstadoProducto);
         return productoRepository.save(productoExistente);
