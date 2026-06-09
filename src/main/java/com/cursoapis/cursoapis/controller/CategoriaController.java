@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.cursoapis.cursoapis.Exceptions.ResourceNotFoundException;
+import com.cursoapis.cursoapis.dto.CategoriaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.cursoapis.cursoapis.entity.Categoria;
 import com.cursoapis.cursoapis.service.CategoriaService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,20 +28,20 @@ public class CategoriaController {
     private CategoriaService categoriaService;
 
     @PostMapping("/crearCategoria")
-    public ResponseEntity<Categoria> crearCategoria(@RequestBody Categoria categoria){
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaService.crearCategoria(categoria));
+    public ResponseEntity<CategoriaDTO> crearCategoria(@RequestBody CategoriaDTO categoriaDTO){
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaService.crearCategoria(categoriaDTO));
     }
 
     @GetMapping("/listarCategoria")
-   public ResponseEntity<List<Categoria>> listarCategoria(){
-    List <Categoria> categorias = categoriaService.listarCategoria();
+   public ResponseEntity<List<CategoriaDTO>> listarCategoria(){
+    List <CategoriaDTO> categorias = categoriaService.listarCategoria();
     return new ResponseEntity<>(categorias, HttpStatus.OK);
 
    }
 
    @GetMapping("/obtenerCategoriaPorId/{idCategoria}")
-   public ResponseEntity<Categoria> obtenerCategoriaPorId(@PathVariable Long idCategoria) throws Exception{
-    Optional <Categoria> categoria1Optional = categoriaService.obtenerCategoriaPorId(idCategoria);
+   public ResponseEntity<CategoriaDTO> obtenerCategoriaPorId(@PathVariable Long idCategoria) throws Exception{
+    Optional <CategoriaDTO> categoria1Optional = categoriaService.obtenerCategoriaPorId(idCategoria);
     if (categoria1Optional.isPresent()) {
         return new ResponseEntity<>(categoria1Optional.get(),HttpStatus.OK);
     }else {
@@ -50,9 +50,9 @@ public class CategoriaController {
    }
 
     @PutMapping("/actualizarCategoria/{idCategoria}")
-    public ResponseEntity <Categoria> actualizarCategoria (@PathVariable Long idCategoria, @RequestBody Categoria categoria){
+    public ResponseEntity <CategoriaDTO> actualizarCategoria (@PathVariable Long idCategoria, @RequestBody CategoriaDTO categoriaDTO){
         try {
-            Categoria categoriaActualizada = categoriaService.actualizarCategoria(idCategoria,categoria);
+            CategoriaDTO categoriaActualizada = categoriaService.actualizarCategoria(idCategoria,categoriaDTO);
             if (categoriaActualizada != null) {
                 return new ResponseEntity<>(categoriaActualizada,HttpStatus.OK);
             }else{

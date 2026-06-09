@@ -3,17 +3,17 @@ package com.cursoapis.cursoapis.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.cursoapis.cursoapis.entity.Categoria;
+import com.cursoapis.cursoapis.dto.CategoriaDTO;
 
 public interface CategoriaService {
     
-    Categoria crearCategoria (Categoria categoria);
+    CategoriaDTO crearCategoria (CategoriaDTO categoriaDTO);
     
-    List<Categoria> listarCategoria();
+    List<CategoriaDTO> listarCategoria();
 
-    Optional <Categoria> obtenerCategoriaPorId(Long idCategoria);
-    
-    Categoria actualizarCategoria(Long idCategoria, Categoria categoria);
+    Optional <CategoriaDTO> obtenerCategoriaPorId(Long idCategoria);
+
+    CategoriaDTO actualizarCategoria(Long idCategoria, CategoriaDTO categoriaDTO);
 
     void aliminarCategoria(Long idCategoria);
 

@@ -3,8 +3,11 @@ package com.cursoapis.cursoapis.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import com.cursoapis.cursoapis.Exceptions.BadRequestException;
 import com.cursoapis.cursoapis.Exceptions.ResourceNotFoundException;
+import com.cursoapis.cursoapis.dto.ProductoDTO;
 import com.cursoapis.cursoapis.entity.Categoria;
+import com.cursoapis.cursoapis.mapper.ProductoMapper;
 import com.cursoapis.cursoapis.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +17,6 @@ import com.cursoapis.cursoapis.entity.Producto;
 import com.cursoapis.cursoapis.repository.ProductoRepository;
 import com.cursoapis.cursoapis.service.ProductoService;
 
-import lombok.SneakyThrows;
 
 @Service
 public class ProductoServiceImpl implements ProductoService{
@@ -25,47 +27,61 @@ public class ProductoServiceImpl implements ProductoService{
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    @Autowired
+    private ProductoMapper productoMapper;
+
     @Override
-    public Producto registraProducto(Long categoriaId, Producto producto) {
+    public ProductoDTO registraProducto(Long categoriaId, ProductoDTO productoDTO) {
        Categoria categoria = categoriaRepository.findById(categoriaId)
                .orElseThrow(() -> new ResourceNotFoundException("Categoria con ID "+ categoriaId+" no encontrada"));
-       producto.setCategoria(categoria);
-       return productoRepository.save(producto);
+       if (productoDTO.getPrecio() == null || productoDTO.getPrecio()<=0){
+           throw new BadRequestException("El precio del producto debe ser mayor que cero");
+       }
+
+       Producto producto = productoMapper.toEntity(productoDTO);
+        producto.setCategoria(categoria);
+
+       return productoMapper.toDTO(productoRepository.save(producto));
 
     }
 
     @Override
-    public List<Producto> listarProducto() {
-       return productoRepository.findAll();
+    public List<ProductoDTO> listarProducto() {
+        List <Producto> productos = productoRepository.findAll();
+        return productos.stream()
+                .map(productoMapper::toDTO)
+                .toList();
     }
 
     @Override
-    public Optional<Producto> buscarPorNombre(String nombre) {
-       return productoRepository.findByNombreProducto(nombre);
+    public Optional<ProductoDTO> buscarPorNombre(String nombre) {
+       Optional<Producto> producto = productoRepository.findByNombreProducto(nombre);
+       return producto.map(productoMapper::toDTO);
     }
 
     @Override
-    public Optional<Producto> buscarPorId(Long idProducto) {
-        return productoRepository.findById(idProducto);
+    public Optional<ProductoDTO> buscarPorId(Long idProducto) {
+        Optional<Producto> producto = productoRepository.findById(idProducto);
+        return producto.map(productoMapper::toDTO);
     }
 
     @Override
-    public Producto actualizarProducto(Long idProducto, Producto producto) {
+    public ProductoDTO actualizarProducto(Long idProducto, ProductoDTO productoDTO) {
         Producto productoExistente = productoRepository.findById(idProducto)
         .orElseThrow(()-> new ResourceNotFoundException("Producto con Id: "+ idProducto + " no encontrado"));
 
-        productoExistente.setNombreProducto(producto.getNombreProducto());
-        productoExistente.setPrecio(producto.getPrecio());
-        productoExistente.setCantidad(producto.getCantidad());
-        productoExistente.setDescripcion(producto.getDescripcion());
-        productoExistente.setEstadoProducto(producto.getEstadoProducto());
+        productoExistente.setNombreProducto(productoDTO.getNombreProducto());
+        productoExistente.setPrecio(productoDTO.getPrecio());
+        productoExistente.setCantidad(productoDTO.getCantidad());
+        productoExistente.setDescripcion(productoDTO.getDescripcion());
+        productoExistente.setEstadoProducto(productoDTO.getEstado());
 
-        if (producto.getCategoria() != null && producto.getCategoria().getIdCategoria() != null){
-            Categoria categoria = categoriaRepository.findById(producto.getCategoria().getIdCategoria())
+        if (productoDTO.getCategoria() != null && productoDTO.getCategoria().getIdCategoria() != null){
+            Categoria categoria = categoriaRepository.findById(productoDTO.getCategoria().getIdCategoria())
                     .orElseThrow(() -> new ResourceNotFoundException ("Categoria no encontrada"));
             productoExistente.setCategoria(categoria);
         }
-        return productoRepository.save(productoExistente);
+        return productoMapper.toDTO(productoRepository.save(productoExistente));
     }
 
     @Override
@@ -79,17 +95,21 @@ public class ProductoServiceImpl implements ProductoService{
 
     @Override
 
-    public Producto cambiarEstadoProducto(Long idProducto, EstadoProducto nuevEstadoProducto) {
+    public ProductoDTO cambiarEstadoProducto(Long idProducto, EstadoProducto nuevEstadoProducto) {
          Producto productoExistente = productoRepository.findById(idProducto)
         .orElseThrow(()-> new ResourceNotFoundException("Producto con Id: "+ idProducto + " no encontrado"));
 
         productoExistente.setEstadoProducto(nuevEstadoProducto);
-        return productoRepository.save(productoExistente);
+
+        return productoMapper.toDTO(productoRepository.save(productoExistente));
     }
 
     @Override
-    public List<Producto> obtenerProductosPorEstado(EstadoProducto estadoProducto) {
-        return productoRepository.findByEstadoProducto(estadoProducto);
+    public List<ProductoDTO> obtenerProductosPorEstado(EstadoProducto estadoProducto) {
+       List<Producto> productos = productoRepository.findByEstadoProducto(estadoProducto);
+       return productos.stream()
+               .map(productoMapper::toDTO)
+               .toList();
     }
 
 }

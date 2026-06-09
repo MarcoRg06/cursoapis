@@ -3,24 +3,25 @@ package com.cursoapis.cursoapis.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.cursoapis.cursoapis.dto.ProductoDTO;
 import com.cursoapis.cursoapis.entity.EstadoProducto;
-import com.cursoapis.cursoapis.entity.Producto;
 
 public interface ProductoService {
-Producto registraProducto(Long categoriaId,Producto producto);
 
-List<Producto> listarProducto();
+ProductoDTO registraProducto(Long categoriaId, ProductoDTO productoDTO);
 
-Optional <Producto> buscarPorNombre (String nombre);
+List<ProductoDTO> listarProducto();
 
-Optional<Producto> buscarPorId (Long idProducto);
+Optional <ProductoDTO> buscarPorNombre (String nombre);
 
-Producto actualizarProducto (Long idProducto, Producto producto);
+Optional<ProductoDTO> buscarPorId (Long idProducto);
+
+ProductoDTO actualizarProducto (Long idProducto, ProductoDTO productoDTO);
 
 void eliminarProducto(Long idProducto);
 
-Producto cambiarEstadoProducto(Long idProducto, EstadoProducto nuevEstadoProducto);
+ProductoDTO cambiarEstadoProducto(Long idProducto, EstadoProducto nuevEstadoProducto);
 
-List <Producto> obtenerProductosPorEstado(EstadoProducto estadoProducto);
+List <ProductoDTO> obtenerProductosPorEstado(EstadoProducto estadoProducto);
 
 }

@@ -1,0 +1,19 @@
+package com.cursoapis.cursoapis.dto;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class CategoriaDTO {
+    private Long idCategoria;
+
+    @NotNull(message = "El nombre de la categoria no debe estar vacio")
+    @Size(min = 3, max = 50, message = "El nombre de la categoria supera los 100 caracteres")
+    private String nombreCategoria;
+
+}

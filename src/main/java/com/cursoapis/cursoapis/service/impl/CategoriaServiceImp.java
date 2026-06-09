@@ -2,9 +2,12 @@ package com.cursoapis.cursoapis.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.cursoapis.cursoapis.Exceptions.BadRequestException;
 import com.cursoapis.cursoapis.Exceptions.ResourceNotFoundException;
+import com.cursoapis.cursoapis.dto.CategoriaDTO;
+import com.cursoapis.cursoapis.mapper.CategoriaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +15,6 @@ import com.cursoapis.cursoapis.entity.Categoria;
 import com.cursoapis.cursoapis.repository.CategoriaRepository;
 import com.cursoapis.cursoapis.service.CategoriaService;
 
-import lombok.SneakyThrows;
 
 @Service
 public class CategoriaServiceImp implements CategoriaService {
@@ -20,33 +22,43 @@ public class CategoriaServiceImp implements CategoriaService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    @Autowired
+    private CategoriaMapper categoriaMapper;
+
 
     @Override
-    public Categoria crearCategoria(Categoria categoria) {
-        if (categoriaRepository.existsByNombreCategoria(categoria.getNombreCategoria())) {
+    public CategoriaDTO crearCategoria(CategoriaDTO categoriaDTO) {
+        if (categoriaRepository.existsByNombreCategoria(categoriaDTO.getNombreCategoria())) {
             throw new BadRequestException("Ya existe una categoria con ese nombre ");
         }
-        return categoriaRepository.save(categoria);
+        Categoria categoria = categoriaMapper.toEntity(categoriaDTO);
+        return categoriaMapper.toDTO(categoriaRepository.save(categoria));
+
     }
 
     @Override
-    public List<Categoria> listarCategoria() {
-        return categoriaRepository.findAll();
+    public List<CategoriaDTO> listarCategoria() {
+        List<Categoria> categorias = categoriaRepository.findAll();
+        return categorias.stream()
+                .map(categoriaMapper::toDTO)
+                .collect(Collectors.toList());
+
     }
 
     @Override
-    public Optional<Categoria> obtenerCategoriaPorId(Long idCategoria) {
-       return categoriaRepository.findById(idCategoria);
+    public Optional<CategoriaDTO> obtenerCategoriaPorId(Long idCategoria) {
+        Optional<Categoria> categoria = categoriaRepository.findById(idCategoria);
+       return categoria.map(categoriaMapper::toDTO);
     }
 
     @Override
-    public Categoria actualizarCategoria(Long idCategoria, Categoria categoria) {
+    public CategoriaDTO actualizarCategoria(Long idCategoria, CategoriaDTO categoriaDTO) {
         Categoria categoriaExistente = categoriaRepository.findById(idCategoria)
         .orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada"));
 
-        categoriaExistente.setNombreCategoria(categoria.getNombreCategoria());
+        categoriaExistente.setNombreCategoria(categoriaDTO.getNombreCategoria());
 
-        return categoriaRepository.save(categoriaExistente);
+        return categoriaMapper.toDTO(categoriaRepository.save(categoriaExistente));
     }
 
     @Override
