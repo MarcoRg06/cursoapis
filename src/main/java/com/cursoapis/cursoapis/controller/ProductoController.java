@@ -1,11 +1,9 @@
 package com.cursoapis.cursoapis.controller;
 
 import com.cursoapis.cursoapis.dto.ProductoDTO;
-import com.cursoapis.cursoapis.service.impl.ProductoServiceImpl;
+import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,114 +13,56 @@ import com.cursoapis.cursoapis.service.ProductoService;
 
 @RestController
 @RequestMapping("/productos")
+@RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class ProductoController {
+    
+    private final ProductoService productoService;
 
-    private final ProductoServiceImpl productoServiceImpl;
-    @Autowired
-    private ProductoService productoService;
-
-
-    ProductoController(ProductoServiceImpl productoServiceImpl) {
-        this.productoServiceImpl = productoServiceImpl;
-    }
-
-    @PostMapping("/registrar/{categoriaId}")
-    public ResponseEntity<?> registrarProducto(
+    @PostMapping("/ingresarProducto/{categoriaId}")
+    public ResponseEntity<ProductoDTO> registroProducto(
             @PathVariable Long categoriaId,
-            @RequestParam("nombreProducto") String nombreProducto,
-            @RequestParam("descripcion") String descripcion,
-            @RequestParam("precio") Double precio,
-            @RequestParam("cantidad") int cantidad,
-            @RequestParam("estado") EstadoProducto estado) {
-        ProductoDTO productoDTO = new ProductoDTO();
-        productoDTO.setNombreProducto(nombreProducto);
-        productoDTO.setDescripcion(descripcion);
-        productoDTO.setPrecio(precio);
-        productoDTO.setCantidad(cantidad);
-        productoDTO.setEstado(estado);
-
+            @Valid @RequestBody ProductoDTO productoDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.registraProducto(categoriaId, productoDTO));
-
     }
-
-    // @GetMapping
-    // public ResponseEntity<List<Producto>> listarProductos() {
-    // return ResponseEntity.ok(productoService.listarProducto());
-    // }
-
+    
     @GetMapping
-    public List<ProductoDTO> listarProductos() {
-
-        return productoService.listarProducto();
-
+    public ResponseEntity<List<ProductoDTO>> listarProductos() {
+        return ResponseEntity.ok(productoService.listarProducto());
     }
 
     @GetMapping("/buscarPornombre/{nombre}")
-    public ResponseEntity<?> buscarPornombre(@PathVariable String nombre) {
-        Optional<ProductoDTO> productoDTO = productoService.buscarPorNombre(nombre);
-        return productoDTO.isPresent() ? ResponseEntity.ok(productoDTO.get())
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Producto no encontrado");
-
+    public ResponseEntity<ProductoDTO> buscarPornombre(@PathVariable String nombre) {
+        return ResponseEntity.ok(productoService.buscarPorNombre(nombre));
     }
 
     @GetMapping("/buscar/{idProducto}")
-    public ResponseEntity<?> buscarPorIdProducto(@PathVariable Long idProducto) {
-        Optional<ProductoDTO> productoDTO = productoService.buscarPorId(idProducto);
-        return productoDTO.isPresent() ? ResponseEntity.ok(productoDTO.get())
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Producto no encontrado");
-
+    public ResponseEntity<ProductoDTO> buscarPorIdProducto(@PathVariable Long idProducto) {
+        return ResponseEntity.ok(productoService.buscarPorId(idProducto));
     }
 
-    @PutMapping("/actualizar/{idProducto}")
-    public ResponseEntity<?> actualizarProducto(
+    @PutMapping("actualizarProducto/{idProducto}")
+    public ResponseEntity<ProductoDTO> actualizarProducto(
             @PathVariable Long idProducto,
-            @RequestParam("nombreProducto") String nombreProducto,
-            @RequestParam("descripcion") String descripcion,
-            @RequestParam("precio") Double precio,
-            @RequestParam("cantidad") int cantidad,
-            @RequestParam("estado") EstadoProducto estado) {
-        try {
-
-            ProductoDTO productoDTO = new ProductoDTO();
-            productoDTO.setNombreProducto(nombreProducto);
-            productoDTO.setDescripcion(descripcion);
-            productoDTO.setPrecio(precio);
-            productoDTO.setCantidad(cantidad);
-            productoDTO.setEstado(estado);
-
-            return ResponseEntity.ok(productoService.actualizarProducto(idProducto, productoDTO));
-        } catch (Exception e) {
-
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-
-        }
+            @Valid @RequestBody ProductoDTO productoDTO) {
+        return ResponseEntity.ok(productoService.actualizarProducto(idProducto, productoDTO));
     }
 
-    @DeleteMapping("/eliminar-producto/{idProducto}")
-    public ResponseEntity<?> EliminarProducto(@PathVariable Long idProducto) {
-        try {
-            productoService.eliminarProducto(idProducto);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    @DeleteMapping("/eliminarProducto/{idProducto}")
+    public ResponseEntity<Void> EliminarProducto(@PathVariable Long idProducto) {
+        productoService.eliminarProducto(idProducto);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/estado-producto/{idProducto}")
-    public ResponseEntity<?> cambiarEstadoProducto(@PathVariable Long idProducto,
+    @PutMapping("/estadoProducto/{idProducto}")
+    public ResponseEntity<ProductoDTO> cambiarEstadoProducto(
+            @PathVariable Long idProducto,
             @RequestBody EstadoProducto estadoProducto) {
-        try {
-            return ResponseEntity.ok(productoService.cambiarEstadoProducto(idProducto, estadoProducto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return ResponseEntity.ok(productoService.cambiarEstadoProducto(idProducto, estadoProducto));
     }
 
     @GetMapping("/estado/{estadoProducto}")
     public ResponseEntity<List<ProductoDTO>> lisartProductoPorEstado(@PathVariable EstadoProducto estadoProducto) {
-
         return ResponseEntity.ok(productoService.obtenerProductosPorEstado(estadoProducto));
     }
 }

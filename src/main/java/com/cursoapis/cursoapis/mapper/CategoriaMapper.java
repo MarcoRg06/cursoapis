@@ -2,18 +2,18 @@ package com.cursoapis.cursoapis.mapper;
 
 import com.cursoapis.cursoapis.dto.CategoriaDTO;
 import com.cursoapis.cursoapis.entity.Categoria;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class CategoriaMapper {
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public CategoriaDTO toDTO(Categoria categoria){
-        return modelMapper.map(categoria,CategoriaDTO.class);
+        return modelMapper.map(categoria, CategoriaDTO.class);
     }
 
     public Categoria toEntity(CategoriaDTO categoriaDTO){

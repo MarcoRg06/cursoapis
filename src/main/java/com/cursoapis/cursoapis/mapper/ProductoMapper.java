@@ -2,15 +2,15 @@ package com.cursoapis.cursoapis.mapper;
 
 import com.cursoapis.cursoapis.dto.ProductoDTO;
 import com.cursoapis.cursoapis.entity.Producto;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ProductoMapper {
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public Producto toEntity(ProductoDTO productoDTO){
         return modelMapper.map(productoDTO, Producto.class);
@@ -20,7 +20,7 @@ public class ProductoMapper {
         modelMapper.map(productoDTO, productoExistente);
     }
 
-    public ProductoDTO toDTO (Producto producto) {
+    public ProductoDTO toDTO(Producto producto) {
         return modelMapper.map(producto, ProductoDTO.class);
     }
 }

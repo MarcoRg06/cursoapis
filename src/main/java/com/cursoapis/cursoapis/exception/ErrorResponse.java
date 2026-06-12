@@ -1,9 +1,7 @@
-package com.cursoapis.cursoapis.Exceptions;
-
+package com.cursoapis.cursoapis.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Data
@@ -17,9 +15,7 @@ public class ErrorResponse {
     public ErrorResponse(String message, int statusCode, String errorDetails) {
         this.message = message;
         this.statusCode = statusCode;
-        this.timestamp=LocalDateTime.now();
+        this.timestamp = LocalDateTime.now();
         this.errorDetails = errorDetails;
     }
-
 }
-
