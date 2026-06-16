@@ -26,7 +26,7 @@ public class ProductoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.registraProducto(categoriaId, productoDTO));
     }
     
-    @GetMapping
+    @GetMapping("/listarProductos")
     public ResponseEntity<List<ProductoDTO>> listarProductos() {
         return ResponseEntity.ok(productoService.listarProducto());
     }
@@ -41,7 +41,7 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.buscarPorId(idProducto));
     }
 
-    @PutMapping("actualizarProducto/{idProducto}")
+    @PutMapping("/actualizarProducto/{idProducto}")
     public ResponseEntity<ProductoDTO> actualizarProducto(
             @PathVariable Long idProducto,
             @Valid @RequestBody ProductoDTO productoDTO) {
